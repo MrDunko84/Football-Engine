@@ -19,7 +19,7 @@ namespace FM.Core.Club
             Players = players.ToList();
         }
 
-        private int DetermineTackling()
+        private int CalculateTackling()
         {
             return (int)(Players.Sum((x) =>
             {
@@ -45,7 +45,7 @@ namespace FM.Core.Club
             }) / Players.Count());
         }
 
-        private int DeterminePassing()
+        private int CalculatePassing()
         {
             return (int)(Players.Sum((x) =>
             {
@@ -72,7 +72,7 @@ namespace FM.Core.Club
             }) / Players.Count());
         }
 
-        private int DetermineShooting()
+        private int CalculateShooting()
         {
             return (int)(Players.Sum((x) =>
             {
@@ -119,9 +119,9 @@ namespace FM.Core.Club
         /// <inheritdoc />
         public void SetupTeam()
         {
-            Tackling = DetermineTackling();
-            Passing = DeterminePassing();
-            Shooting = DetermineShooting();
+            Tackling = CalculateTackling();
+            Passing = CalculatePassing();
+            Shooting = CalculateShooting();
         }
     }
 

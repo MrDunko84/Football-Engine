@@ -166,7 +166,6 @@ namespace FM.Core.Match
                            _options.GoalBoost);
         }
 
-
         private bool IsEvent(bool homeTeamInPossession,
                              int homeForSkill,
                              int homeAgainstSkill,
@@ -201,8 +200,11 @@ namespace FM.Core.Match
                    .ToList()
                    .ForEach((x) =>
                     {
-
                         var shooting = x.Shooting;
+                        if (x.Position == PlayerPosition.Attack) {
+                            shooting = (int)(shooting * 1.75d);
+                        }
+
                         for (var i = 0; i < shooting; i++)
                         {
                             playerOdds.Add(x);
