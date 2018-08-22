@@ -1,4 +1,4 @@
-﻿namespace FM.Engine.Match
+﻿namespace FM.Core.Match
 {
 
     /// <summary>
