@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FM.Core.Randomise;
@@ -11,6 +12,50 @@ namespace FM.Core.Match
         HomeWin = 1,
         AwayWin,
         Draw
+    }
+
+    public class MatchScorer
+    {
+        public IPlayer Player { get; set; }
+        public int Minute { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{Player.Name} ({Minute})";
+        }
+    }
+
+    public class MatchStats
+    {
+        public List<MatchScorer> Goals = new List<MatchScorer>();
+        public int MinutesInPossession;
+        public int Chances;
+        public int Fouls;
+    }
+
+    public class MatchReport
+    {
+        public MatchStats Home = new MatchStats();
+        public MatchStats Away = new MatchStats();
+
+        public int MinutesPlayed;
+
+        public int GetHomePossession()
+        {
+            return (int)Math.Ceiling(GetPercentage(MinutesPlayed, Home.MinutesInPossession));
+        }
+
+        public int GetAwayPossession()
+        {
+            return (int)Math.Floor(GetPercentage(MinutesPlayed, Away.MinutesInPossession));
+        }
+
+        private static double GetPercentage(int minutesPlayed, int minutesInPosession)
+        {
+            return ((double) 100 / minutesPlayed) * minutesInPosession;
+        }
+
     }
 
     public class MatchSimulator
@@ -33,20 +78,12 @@ namespace FM.Core.Match
         public ITeam HomeTeam { get; }
         public ITeam AwayTeam { get; }
 
-        public int HomeGoals { get; private set; }
-        public int AwayGoals { get; private set; }
-
-        public List<int> HomeGoalMinutes { get; private set; }
-        public List<int> AwayGoalMinutes { get; private set; }
-
-        public List<IPlayer> HomeGoalScorers { get; private set; }
-        public List<IPlayer> AwayGoalScorers { get; private set; }
-
+        public MatchReport Report { get; private set; }
 
         public MatchResult Result()
         {
-            if (HomeGoals > AwayGoals) return MatchResult.HomeWin;
-            if (AwayGoals > HomeGoals) return MatchResult.AwayWin;
+            if (Report.Home.Goals.Count() > Report.Away.Goals.Count()) return MatchResult.HomeWin;
+            if (Report.Away.Goals.Count() > Report.Home.Goals.Count()) return MatchResult.AwayWin;
 
             return MatchResult.Draw;
         }
@@ -54,19 +91,18 @@ namespace FM.Core.Match
         /// <inheritdoc />
         public override string ToString()
         {
+            var homeGoals = string.Join(", ", Report.Home.Goals.Select((x) => x.ToString()));
+            var awayGoals = string.Join(", ", Report.Away.Goals.Select((x) => x.ToString()));
+
             var sb = new StringBuilder();
 
-            var homeGoalMin = string.Join(", ", HomeGoalMinutes);
-            var awayGoalMin = string.Join(", ", AwayGoalMinutes);
-
-            var homeGoalScorer = string.Join(", ", HomeGoalScorers.Select((x) => x.Name));
-            var awayGoalScorer = string.Join(", ", AwayGoalScorers.Select((x) => x.Name));
-
             sb.AppendLine($"Teams  : {HomeTeam.Name} - {AwayTeam.Name}");
-            sb.AppendLine($"Score  : {HomeGoals.ToString()} - {AwayGoals.ToString()}");
-            sb.AppendLine($"Mins  : {homeGoalMin} | {awayGoalMin}");
-            sb.AppendLine($"Scorers  : {homeGoalScorer} | {awayGoalScorer}");
+            sb.AppendLine($"Goals  : {Report.Home.Goals.Count().ToString()} - {Report.Away.Goals.Count().ToString()}");
+            sb.AppendLine($"Scorers : {homeGoals} | {awayGoals}");
             sb.AppendLine($"Result : {Result().ToString()}");
+            sb.AppendLine($"Possession : {Report.GetHomePossession().ToString()}% - {Report.GetAwayPossession().ToString()}%");
+            sb.AppendLine($"Chances: {Report.Home.Chances.ToString()} - {Report.Away.Chances.ToString()}");
+            sb.AppendLine($"Fouls: {Report.Home.Fouls.ToString()} - {Report.Away.Fouls.ToString()}");
 
             return sb.ToString();
         }
@@ -76,14 +112,7 @@ namespace FM.Core.Match
             HomeTeam.SetupTeam();
             AwayTeam.SetupTeam();
 
-            HomeGoals = 0;
-            HomeGoalMinutes = new List<int>();
-            HomeGoalScorers = new List<IPlayer>();
-
-            AwayGoals = 0;
-            AwayGoalMinutes = new List<int>();
-            AwayGoalScorers = new List<IPlayer>();
-
+            Report = new MatchReport();
 
         }
 
@@ -93,33 +122,30 @@ namespace FM.Core.Match
         public void KickOff()
         {
 
-            var minutes = 0;
-
             ResetMatch();
 
-            while (minutes < 90)
+            while (Report.MinutesPlayed < 90)
             {
-                minutes++;
+
+                Report.MinutesPlayed++;
 
                 var homeTeamInPossession = HomeTeamInPossession();
 
+                var outPossessionStats = !homeTeamInPossession ? Report.Home : Report.Away;
+                var inPossessionStats = homeTeamInPossession ? Report.Home : Report.Away;
+
+                inPossessionStats.MinutesInPossession++;
+
+                if (IsFoul(homeTeamInPossession)) { outPossessionStats.Fouls++; }
+
                 if (!IsChance(homeTeamInPossession)) continue;
+                inPossessionStats.Chances++;
+
                 if (!IsGoal(homeTeamInPossession)) continue;
 
                 var scorer = DetermineScorer(homeTeamInPossession);
-
-                if (homeTeamInPossession)
-                {
-                    HomeGoals++;
-                    HomeGoalMinutes.Add(minutes);
-                    HomeGoalScorers.Add(scorer);
-                }
-                else
-                {
-                    AwayGoals++;
-                    AwayGoalMinutes.Add(minutes);
-                    AwayGoalScorers.Add(scorer);
-                }
+                
+                inPossessionStats.Goals.Add(new MatchScorer() {Minute = Report.MinutesPlayed, Player = scorer});
 
             }
 
@@ -131,11 +157,22 @@ namespace FM.Core.Match
         private bool HomeTeamInPossession()
         {
 
-            var tacklingTotal = HomeTeam.Tackling + AwayTeam.Tackling;
+            var tacklingTotal = (HomeTeam.Tackling + HomeTeam.Passing) + (AwayTeam.Tackling + AwayTeam.Passing);
             var result = _random.Next(0, tacklingTotal);
 
-            return result <= HomeTeam.Tackling;
+            return result <= (HomeTeam.Tackling + HomeTeam.Passing);
 
+        }
+
+        private bool IsFoul(bool homeTeamInPossession)
+        {
+            return IsEvent(!homeTeamInPossession,
+                           HomeTeam.Tackling,
+                           HomeTeam.Passing,
+                           AwayTeam.Tackling,
+                           AwayTeam.Passing,
+                           0.1d,
+                           0.0d);
         }
 
         /// <summary>
@@ -202,7 +239,10 @@ namespace FM.Core.Match
                     {
                         var shooting = x.Shooting;
                         if (x.Position == PlayerPosition.Attack) {
-                            shooting = (int)(shooting * 1.75d);
+                            shooting = (shooting * 6);
+                        } else if (x.Position == PlayerPosition.Midfield)
+                        {
+                            shooting = (shooting * 2);
                         }
 
                         for (var i = 0; i < shooting; i++)
