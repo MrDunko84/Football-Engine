@@ -124,8 +124,18 @@ namespace FM.Core.Match
 
             ResetMatch();
 
+            // TODO: Injury time, Extra time, penalties
             while (Report.MinutesPlayed < 90)
             {
+
+                // TODO: Look at determining player in possession
+                // TODO: Player position
+                // TODO: Ball position
+                // TODO: Game events, passing, tackling, shooting
+                // TODO: Team keeps formation
+                // TODO: Offsides
+
+                // TODO: Player subs
 
                 Report.MinutesPlayed++;
 
@@ -136,11 +146,13 @@ namespace FM.Core.Match
 
                 inPossessionStats.MinutesInPossession++;
 
+                // TODO: Determine if foul deems a card, player injured
                 if (IsFoul(homeTeamInPossession)) { outPossessionStats.Fouls++; }
 
                 if (!IsChance(homeTeamInPossession)) continue;
                 inPossessionStats.Chances++;
 
+                // TODO: Determine Shot on/off target, we'll also get saves here too, plus hitting the post crossbar ect.
                 if (!IsGoal(homeTeamInPossession)) continue;
 
                 var scorer = DetermineScorer(homeTeamInPossession);
@@ -166,6 +178,7 @@ namespace FM.Core.Match
 
         private bool IsFoul(bool homeTeamInPossession)
         {
+            // TODO: Move chance likelyhood to options
             return IsEvent(!homeTeamInPossession,
                            HomeTeam.Tackling,
                            HomeTeam.Passing,

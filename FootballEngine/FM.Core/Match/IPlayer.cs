@@ -9,6 +9,8 @@
         Attack
     }
 
+
+    // TODO: Expand skills to player skills that we build up core skills
     public interface IPlayer
         : IIdentifier, 
           ISkills
