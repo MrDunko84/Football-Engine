@@ -6,20 +6,23 @@ using System.Text;
 namespace FM.Core.AI
 {
     public class Player
+        : IMovement
     {
         public Player(int number)
         {
             Number = number;
-            Location = new Point(0, 0);
-            _finish = new Point(0, 0);
-            _speed = 1;
+            Location = new PointF(0, 0);
+            Destination = new PointF(0, 0);
+            _speed = 1.2f;
         }
 
         public int Number { get; }
-        public Point Location { get; private set; }
+        public PointF Location { get; private set; }
 
-        private Point _finish;
-        private double _speed;
+        /// <inheritdoc />
+        public PointF Destination { get; private set; }
+
+        private float _speed;
 
         /// <inheritdoc />
         public override string ToString()
@@ -27,40 +30,37 @@ namespace FM.Core.AI
             return Number.ToString();
         }
 
-        public void SetDestination(Point destination)
+        /// <inheritdoc />
+        public void SetStartLocation(PointF location)
         {
-            _finish = new Point(destination.X, destination.Y);
+            Location = new PointF(location.X, location.Y);
         }
 
-        public void SetSpeed(double speed)
+        public void SetSpeed(float speed)
         {
             _speed = speed;
+        }
+
+        /// <inheritdoc />
+        public void SetDestination(PointF destination)
+        {
+            Destination = new PointF(destination.X, destination.Y);
         }
 
 
         public void Update()
         {
-            Location = PlotPath(Location, _finish, _speed);
-        }
+            Location = MovementHelper.PlotPath(Location, Destination, _speed);
 
-        private static Point PlotPath(Point start, Point finish, double speed)
-        {
-            if (start.X == finish.X && start.Y == finish.Y) return finish;
+            if (Math.Abs(Location.X - Destination.X) <= 0 && Math.Abs(Location.Y - Destination.Y) <= 0)
+            {
+                // change detination
+                SetDestination(new PointF(MovementHelper.Rnd.Next(0, 80 * MovementHelper.Scale),
+                                          MovementHelper.Rnd.Next(0, 120 * MovementHelper.Scale)));
 
-            var deltaX = (finish.X - start.X);
-            var deltaY = (finish.Y - start.Y);
+                SetSpeed((float)MovementHelper.Rnd.Next(6, 20) / 10);
 
-            var delta = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
-
-            var lengthRatio = speed / delta;
-
-            var extendedDeltaX = deltaX * lengthRatio;
-            var extendedDeltaY = deltaY * lengthRatio;
-
-            Console.WriteLine(extendedDeltaX.ToString() + "-" + extendedDeltaY.ToString());
-
-            return new Point(start.X + (int)Math.Round(extendedDeltaX),
-                             start.Y + (int)Math.Round(extendedDeltaY));
+            }
 
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using FM.Core.AI;
@@ -9,14 +10,35 @@ namespace FM.UI.Test
     {
 
         private readonly Random _rnd = new Random();
-        private readonly Player _player = new Player(11);
+        private readonly List<Player> _players = new List<Player> { 
+            new Player(1), 
+            new Player(2), 
+            new Player(3), 
+            new Player(4), 
+            new Player(5), 
+            new Player(6), 
+            new Player(7), 
+            new Player(8), 
+            new Player(9), 
+            new Player(10), 
+        };
 
-        const int scale = 4;
+        
 
         
         public Form1()
         {
             InitializeComponent();
+
+            _players.ForEach((x) => {
+                                x.SetStartLocation(new PointF(MovementHelper.Rnd.Next(0, 80 * MovementHelper.Scale),
+                                          MovementHelper.Rnd.Next(0, 120 * MovementHelper.Scale)));
+
+                                x.SetDestination(new PointF(MovementHelper.Rnd.Next(0, 80 * MovementHelper.Scale),
+                                          MovementHelper.Rnd.Next(0, 120 * MovementHelper.Scale)));
+                                                          });
+
+
         }
 
         private void Form1_Load(object sender, EventArgs e) { this.DoubleBuffered = true; }
@@ -34,10 +56,10 @@ namespace FM.UI.Test
             var rect = region.ToRectangle();
             
             
-            rect.X = rect.X * scale;
-            rect.Y = rect.Y * scale;
-            rect.Width = rect.Width * scale;
-            rect.Height = rect.Height * scale;
+            rect.X = rect.X * MovementHelper.Scale;
+            rect.Y = rect.Y * MovementHelper.Scale;
+            rect.Width = rect.Width * MovementHelper.Scale;
+            rect.Height = rect.Height * MovementHelper.Scale;
 
             
 
@@ -75,13 +97,19 @@ namespace FM.UI.Test
                 DrawRegion(pitch.Region, pen, e.Graphics);
             }
 
-            e.Graphics.DrawString(_player.ToString(),
-                new Font("Arial", 10),
-                new SolidBrush(Color.Black),
-                _player.Location);
+            _players.ForEach((p) => UpdatePlayer(e.Graphics, p));
 
-            _player.Update();
 
+        }
+
+        private void UpdatePlayer(Graphics g, Player player)
+        {
+          g.DrawString(player.ToString(),
+                new Font("Arial", 8),
+                new SolidBrush(Color.Red),
+                player.Location);
+
+            player.Update();
         }
 
         private void timerPaint_Tick(object sender, EventArgs e)
@@ -89,14 +117,5 @@ namespace FM.UI.Test
             this.Refresh();
         }
 
-        private void cmdSet_Click(object sender, EventArgs e)
-        {
-            _player.SetDestination(new Point(Int32.Parse(txtX.Text) * scale, Int32.Parse(txtY.Text) * scale));
-        }
-
-        private void cmdSpeed_Click(object sender, EventArgs e)
-        {
-            _player.SetSpeed(Double.Parse(txtSpeed.Text));
-        }
     }
 }
