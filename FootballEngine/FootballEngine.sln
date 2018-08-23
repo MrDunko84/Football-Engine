@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FM.Core", "FM.Core\FM.Core.csproj", "{152C2D9B-DF68-49FA-9476-1ED6211DC09C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FM.Core", "FM.Core\FM.Core.csproj", "{152C2D9B-DF68-49FA-9476-1ED6211DC09C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FM.Core.Tests", "FM.Core.Tests\FM.Core.Tests.csproj", "{F317C530-40C9-4F65-AE22-E0F30872EBCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FM.Core.Tests", "FM.Core.Tests\FM.Core.Tests.csproj", "{F317C530-40C9-4F65-AE22-E0F30872EBCE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{517F43C3-112C-4B2D-8D1A-747E82207D44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FM.UI.Test", "FM.UI.Test\FM.UI.Test.csproj", "{314A7977-A885-48AD-B940-D4C5C6C30190}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +25,16 @@ Global
 		{F317C530-40C9-4F65-AE22-E0F30872EBCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F317C530-40C9-4F65-AE22-E0F30872EBCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F317C530-40C9-4F65-AE22-E0F30872EBCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{314A7977-A885-48AD-B940-D4C5C6C30190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{314A7977-A885-48AD-B940-D4C5C6C30190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{314A7977-A885-48AD-B940-D4C5C6C30190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{314A7977-A885-48AD-B940-D4C5C6C30190}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{314A7977-A885-48AD-B940-D4C5C6C30190} = {517F43C3-112C-4B2D-8D1A-747E82207D44}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E3DFCE63-3B20-4801-8875-81B021550206}
