@@ -59,6 +59,7 @@ namespace FM.Core.AI
         Half,
         Central,
         Channel,
+        Corner,
         PenaltyBox,
         SixYardBox
     }
@@ -105,8 +106,12 @@ namespace FM.Core.AI
                                                      18);
 
             northHalf.AddInnerRegion(penaltyBox);
-            northHalf.AddInnerRegion(PitchSide.West, PitchParts.Channel, 0,0, penaltyBox.X, northHalf.Length);
-            northHalf.AddInnerRegion(PitchSide.East, PitchParts.Channel, (penaltyBox.X + penaltyBox.Width), 0, penaltyBox.X, northHalf.Length);
+            northHalf.AddInnerRegion(PitchSide.West, PitchParts.Channel, 0, penaltyBox.Length, penaltyBox.X, (northHalf.Length - penaltyBox.Length));
+            northHalf.AddInnerRegion(PitchSide.East, PitchParts.Channel, (penaltyBox.X + penaltyBox.Width), penaltyBox.Length, penaltyBox.X, (northHalf.Length - penaltyBox.Length));
+
+            northHalf.AddInnerRegion(PitchSide.West, PitchParts.Corner, 0, 0, penaltyBox.X, penaltyBox.Length);
+            northHalf.AddInnerRegion(PitchSide.East, PitchParts.Corner, (penaltyBox.X + penaltyBox.Width), 0, penaltyBox.X, penaltyBox.Length);
+
             northHalf.AddInnerRegion(PitchSide.Center, PitchParts.Central, penaltyBox.X, penaltyBox.Length, penaltyBox.Width, (northHalf.Length - penaltyBox.Length));
 
             penaltyBox.AddInnerRegion(PitchParts.SixYardBox, penaltyBox.X + 12, 0, 20, 6);
@@ -123,10 +128,15 @@ namespace FM.Core.AI
                                                      18);
 
             southHalf.AddInnerRegion(penaltyBox);
-            southHalf.AddInnerRegion(PitchSide.West, PitchParts.Channel, 0,southHalf.Y, penaltyBox.X, southHalf.Length);
-            southHalf.AddInnerRegion(PitchSide.East, PitchParts.Channel, (penaltyBox.X + penaltyBox.Width), southHalf.Y, penaltyBox.X, southHalf.Length);
+            southHalf.AddInnerRegion(PitchSide.West, PitchParts.Channel, 0,southHalf.Y, penaltyBox.X, (southHalf.Length - penaltyBox.Length));
+            southHalf.AddInnerRegion(PitchSide.East, PitchParts.Channel, (penaltyBox.X + penaltyBox.Width), southHalf.Y, penaltyBox.X, (southHalf.Length - penaltyBox.Length));
+
+            southHalf.AddInnerRegion(PitchSide.West, PitchParts.Corner, 0, penaltyBox.Y, penaltyBox.X, penaltyBox.Length);
+            southHalf.AddInnerRegion(PitchSide.East, PitchParts.Corner, (penaltyBox.X + penaltyBox.Width), penaltyBox.Y, penaltyBox.X, penaltyBox.Length);
+
             southHalf.AddInnerRegion(PitchSide.Center, PitchParts.Central, penaltyBox.X, southHalf.Y, penaltyBox.Width, (southHalf.Length - penaltyBox.Length));
 
+            penaltyBox.AddInnerRegion(PitchParts.SixYardBox, penaltyBox.X + 12, (southHalf.Y + southHalf.Length) - 6, 20, 6);
         }
 
     }
@@ -159,6 +169,12 @@ namespace FM.Core.AI
 
         public int Width => _region.Width;
         public int Length => _region.Height;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{(int)Area} - {(int)Side} - {(int)Part}";
+        }
 
         public Rectangle ToRectangle()
         {
