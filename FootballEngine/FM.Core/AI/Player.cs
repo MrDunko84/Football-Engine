@@ -14,7 +14,7 @@ namespace FM.Core.AI
             Number = number;
             Location = new Vector2(0, 0);
             Destination = new Vector2(0, 0);
-            _speed = 1.2f;
+            Speed = 0.2f;
         }
 
         public int Number { get; }
@@ -23,7 +23,9 @@ namespace FM.Core.AI
         /// <inheritdoc />
         public Vector2 Destination { get; private set; }
 
-        private float _speed;
+        /// <inheritdoc />
+        public float Speed { get; private set; }
+
 
         /// <inheritdoc />
         public override string ToString()
@@ -39,7 +41,7 @@ namespace FM.Core.AI
 
         public void SetSpeed(float speed)
         {
-            _speed = speed;
+            Speed = speed;
         }
 
         /// <inheritdoc />

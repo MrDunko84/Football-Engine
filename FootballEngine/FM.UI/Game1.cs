@@ -30,6 +30,9 @@ namespace FM.UI
             new Player(11)
         };
 
+        private Texture2D _texture2;
+        
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -56,6 +59,9 @@ namespace FM.UI
                 x.SetDestination(new Vector2(MovementHelper.Rnd.Next(0, 80 * MovementHelper.Scale),
                                             MovementHelper.Rnd.Next(0, 120 * MovementHelper.Scale)));
             });
+
+            _texture2 = new Texture2D(GraphicsDevice, 1, 1);
+            _texture2.SetData(new Color[] {Color.White});
 
         }
 
@@ -133,15 +139,12 @@ namespace FM.UI
                 Height = region.Length * MovementHelper.Scale
             };
 
-            var texture2 = new Texture2D(GraphicsDevice, 1, 1);
-            texture2.SetData(new Color[] {Color.White});
-
             const int borderWidth = 1;
 
-            _spriteBatch.Draw(texture2, new Rectangle(rect.Left, rect.Top, borderWidth, rect.Height), Color.Black );
-            _spriteBatch.Draw(texture2, new Rectangle(rect.Right, rect.Top, borderWidth, rect.Height), Color.Black );
-            _spriteBatch.Draw(texture2, new Rectangle(rect.Left, rect.Top, rect.Width, borderWidth), Color.Black );
-            _spriteBatch.Draw(texture2, new Rectangle(rect.Left, rect.Bottom, rect.Width, borderWidth), Color.Black );
+            _spriteBatch.Draw(_texture2, new Rectangle(rect.Left, rect.Top, borderWidth, rect.Height), Color.Black );
+            _spriteBatch.Draw(_texture2, new Rectangle(rect.Right, rect.Top, borderWidth, rect.Height), Color.Black );
+            _spriteBatch.Draw(_texture2, new Rectangle(rect.Left, rect.Top, rect.Width, borderWidth), Color.Black );
+            _spriteBatch.Draw(_texture2, new Rectangle(rect.Left, rect.Bottom, rect.Width, borderWidth), Color.Black );
 
             // Draws the region labels
             //_spriteBatch.DrawString(_font, region.ToString(), new Vector2(rect.X + (rect.Width / 2), rect.Y + (rect.Height / 2)), Color.Black);
@@ -162,15 +165,15 @@ namespace FM.UI
             _spriteBatch.DrawString(_font, player.ToString(), player.Location, Color.Black);
 
 
-            player.SetStartLocation(MovementHelper.PlotPath(player.Location, player.Destination, 0.1f, gameTime));
+            player.SetStartLocation(MovementHelper.PlotPath2(player.Location, player.Destination, player.Speed, gameTime));
 
-            if (Math.Abs(player.Location.X - player.Destination.X) <= 0 && Math.Abs(player.Location.Y - player.Destination.Y) <= 0)
+            if (Math.Abs(player.Location.X - player.Destination.X) <= 1 && Math.Abs(player.Location.Y - player.Destination.Y) <= 1)
             {
                 // change detination
                 player.SetDestination(new Vector2(MovementHelper.Rnd.Next(0, 80 * MovementHelper.Scale),
                                            MovementHelper.Rnd.Next(0, 120 * MovementHelper.Scale)));
 
-                player.SetSpeed((float)MovementHelper.Rnd.NextDouble());
+                //player.SetSpeed((float)MovementHelper.Rnd.NextDouble());
 
             }
 

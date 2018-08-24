@@ -11,6 +11,7 @@ namespace FM.Core.AI
     {
         Vector2 Location { get; }
         Vector2 Destination { get; }
+        float Speed { get; }
 
         void SetStartLocation(Vector2 location);
 
@@ -35,7 +36,7 @@ namespace FM.Core.AI
 
             var delta = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
 
-            var lengthRatio = (float)(speed / delta);
+            var lengthRatio = (float)((speed / 10) / delta);
 
             var extendedDeltaX = deltaX * lengthRatio * gameTime.ElapsedGameTime.Milliseconds;
             var extendedDeltaY = deltaY * lengthRatio * gameTime.ElapsedGameTime.Milliseconds;
@@ -45,19 +46,13 @@ namespace FM.Core.AI
 
         }
 
-
-        public static Vector2 PlotPath2(Vector2 start, Vector2 finish, double speed, GameTime gameTime)
+        public static Vector2 PlotPath2(Vector2 start, Vector2 finish, float speed, GameTime gameTime)
         {
 
-            var deltaX = (finish.X - start.X);
-            var deltaY = (finish.Y - start.Y);
+            var distance = finish - start;
+            distance.Normalize();
 
-            var distance = (float)Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
-            var directionX = ((deltaX) / distance) * gameTime.ElapsedGameTime.Milliseconds;
-            var directionY = ((deltaY) / distance) *  gameTime.ElapsedGameTime.Milliseconds;
-
-            return new Vector2(start.X + directionX,
-                               start.Y + directionY);
+            return start + (distance * (float)gameTime.ElapsedGameTime.TotalMilliseconds) * speed;
 
         }
 
