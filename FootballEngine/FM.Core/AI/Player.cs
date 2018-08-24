@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace FM.Core.AI
 {
@@ -11,16 +12,16 @@ namespace FM.Core.AI
         public Player(int number)
         {
             Number = number;
-            Location = new PointF(0, 0);
-            Destination = new PointF(0, 0);
+            Location = new Vector2(0, 0);
+            Destination = new Vector2(0, 0);
             _speed = 1.2f;
         }
 
         public int Number { get; }
-        public PointF Location { get; private set; }
+        public Vector2 Location { get; private set; }
 
         /// <inheritdoc />
-        public PointF Destination { get; private set; }
+        public Vector2 Destination { get; private set; }
 
         private float _speed;
 
@@ -31,9 +32,9 @@ namespace FM.Core.AI
         }
 
         /// <inheritdoc />
-        public void SetStartLocation(PointF location)
+        public void SetStartLocation(Vector2 location)
         {
-            Location = new PointF(location.X, location.Y);
+            Location = new Vector2(location.X, location.Y);
         }
 
         public void SetSpeed(float speed)
@@ -42,25 +43,25 @@ namespace FM.Core.AI
         }
 
         /// <inheritdoc />
-        public void SetDestination(PointF destination)
+        public void SetDestination(Vector2 destination)
         {
-            Destination = new PointF(destination.X, destination.Y);
+            Destination = new Vector2(destination.X, destination.Y);
         }
 
 
         public void Update()
         {
-            Location = MovementHelper.PlotPath(Location, Destination, _speed);
+            //Location = MovementHelper.PlotPath(Location, Destination, _speed);
 
-            if (Math.Abs(Location.X - Destination.X) <= 0 && Math.Abs(Location.Y - Destination.Y) <= 0)
-            {
-                // change detination
-                SetDestination(new PointF(MovementHelper.Rnd.Next(0, 80 * MovementHelper.Scale),
-                                          MovementHelper.Rnd.Next(0, 120 * MovementHelper.Scale)));
+            //if (Math.Abs(Location.X - Destination.X) <= 0 && Math.Abs(Location.Y - Destination.Y) <= 0)
+            //{
+            //    // change detination
+            //    SetDestination(new Vector2(MovementHelper.Rnd.Next(0, 80 * MovementHelper.Scale),
+            //                              MovementHelper.Rnd.Next(0, 120 * MovementHelper.Scale)));
 
-                SetSpeed((float)MovementHelper.Rnd.Next(6, 20) / 10);
+            //    SetSpeed((float)MovementHelper.Rnd.Next(6, 20) / 10);
 
-            }
+            //}
 
         }
 
